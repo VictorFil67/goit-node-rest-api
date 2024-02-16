@@ -34,8 +34,7 @@ const deleteContact = async (req, res) => {
 };
 
 const createContact = async (req, res) => {
-  const { name, email, phone } = req.body;
-  const result = await addContact(name, email, phone);
+  const result = await addContact(req.body);
   res.status(201).json(result);
 };
 
@@ -52,9 +51,6 @@ const updateContact = async (req, res) => {
 };
 
 const updateStatusContact = async (req, res) => {
-  // if (Object.keys(req.body).length === 0) {
-  //   throw HttpError(400, "Body must have at least one field");
-  // }
   const { id } = req.params;
   const result = await updateStatusContactById(id, req.body);
   if (!result) {

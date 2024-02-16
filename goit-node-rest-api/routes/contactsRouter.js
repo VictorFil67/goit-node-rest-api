@@ -6,7 +6,6 @@ import {
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
 import isValidId from "../middlewares/isValidId.js";
-// import { updateStatusContactById } from "../services/contactsServices.js";
 
 const contactsRouter = express.Router();
 const {
