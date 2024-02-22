@@ -4,22 +4,41 @@ export function listContacts() {
   return Contact.find();
 }
 
-export async function getContactById(contactId) {
+export function listContactsByFilter(filter) {
+  return Contact.find(filter);
+}
+
+export function getContactById(contactId) {
   return Contact.findById(contactId);
 }
 
-export async function removeContact(contactId) {
-  return Contact.findByIdAndDelete(contactId);
+export function getContactByFilter(filter) {
+  return Contact.findOne(filter);
 }
 
-export async function addContact(data) {
+export function removeContact(contactId) {
+  return Contact.findByIdAndDelete(contactId);
+}
+export function removeContactByFilter(filter) {
+  return Contact.findOneAndDelete(filter);
+}
+
+export function addContact(data) {
   return Contact.create(data);
 }
 
-export async function updateContactById(contactId, data) {
+export function updateContactById(contactId, data) {
   return Contact.findByIdAndUpdate(contactId, data);
 }
 
-export async function updateStatusContactById(contactId, data) {
+export function updateContactByFilter(filter, data) {
+  return Contact.findOneAndUpdate(filter, data);
+}
+
+export function updateStatusContactById(contactId, data) {
   return Contact.findByIdAndUpdate(contactId, data);
+}
+
+export function updateStatusContactByFilter(filter, data) {
+  return Contact.findOneAndUpdate(filter, data);
 }
