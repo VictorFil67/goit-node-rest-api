@@ -3,7 +3,10 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUser } from "../services/userServices.js";
+import {
+  findUser,
+  updateSubscriptionByFilter,
+} from "../services/userServices.js";
 import "dotenv/config"; // Вместо этого можно:
 // import dotenv from "dotenv";
 // dotenv.config();
@@ -65,9 +68,23 @@ const logout = async (req, res) => {
   res.status(204).json();
 };
 
+const updateSubscription = async (req, res) => {
+  const { email } = req.user;
+  const result = await updateSubscriptionByFilter({ email }, req.body);
+  const { subscription } = result;
+  if (!result) {
+    throw HttpError(404);
+  }
+  res.status(200).json({
+    email,
+    subscription,
+  });
+};
+
 export default {
   signup: ctrlWrapper(signup),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateSubscription: ctrlWrapper(updateSubscription),
 };

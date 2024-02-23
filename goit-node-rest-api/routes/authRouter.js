@@ -6,11 +6,13 @@ import authtenticate from "../middlewares/authenticate.js";
 
 const authRouter = express.Router();
 
-const { signup, signin, getCurrent, logout } = authControllers;
+const { signup, signin, getCurrent, logout, updateSubscription } =
+  authControllers;
 
 authRouter.post("/register", validateBody(signupSchema), signup);
 authRouter.post("/login", validateBody(signinSchema), signin);
 authRouter.get("/current", authtenticate, getCurrent);
 authRouter.post("/logout", authtenticate, logout);
+authRouter.patch("/", authtenticate, updateSubscription);
 
 export default authRouter;

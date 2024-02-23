@@ -3,19 +3,25 @@ import {
   // getContactById,
   // removeContact,
   addContact,
-  updateContactById,
+  // updateContactById,
   // updateStatusContactById,
   listContactsByFilter,
   getContactByFilter,
   removeContactByFilter,
   updateStatusContactByFilter,
+  updateContactByFilter,
 } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
 const getAllContacts = async (req, res) => {
+  console.log(req.query);
+  const { page = 1, limit = 20, favorite } = req.query;
+  const skip = (page - 1) * limit;
   const { _id: owner } = req.user;
-  const result = await listContactsByFilter({ owner });
+  const result = !favorite
+    ? await listContactsByFilter({ owner }, { skip, limit })
+    : await listContactsByFilter({ owner, favorite }, { skip, limit });
   res.json(result);
 };
 
@@ -53,7 +59,7 @@ const updateContact = async (req, res) => {
   }
   const { id } = req.params;
   const { _id: owner } = req.user;
-  const result = await updateContactById({ _id: id, owner }, req.body);
+  const result = await updateContactByFilter({ _id: id, owner }, req.body);
   if (!result) {
     throw HttpError(404);
   }

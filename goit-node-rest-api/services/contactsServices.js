@@ -4,8 +4,8 @@ export function listContacts() {
   return Contact.find();
 }
 
-export function listContactsByFilter(filter) {
-  return Contact.find(filter);
+export function listContactsByFilter(filter, query) {
+  return Contact.find(filter, "", query);
 }
 
 export function getContactById(contactId) {
