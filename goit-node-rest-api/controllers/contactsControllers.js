@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+import path from "path";
 import {
   // listContacts,
   // getContactById,
@@ -13,6 +15,8 @@ import {
 } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
+
+const contactsDir = path.resolve("public", "avatars");
 
 const getAllContacts = async (req, res) => {
   console.log(req.query);
@@ -48,8 +52,13 @@ const deleteContact = async (req, res) => {
 };
 
 const createContact = async (req, res) => {
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(contactsDir, filename);
+  await fs.rename(oldPath, newPath);
   const { _id: owner } = req.user;
-  const result = await addContact({ ...req.body, owner });
+  const avatarURL = path.join("avatars", filename);
+
+  const result = await addContact({ ...req.body, avatarURL, owner });
   res.status(201).json(result);
 };
 
