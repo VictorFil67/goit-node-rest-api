@@ -8,10 +8,7 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {
-  findUser,
-  updateSubscriptionByFilter,
-} from "../services/userServices.js";
+import { findUser, updateByFilter } from "../services/userServices.js";
 import "dotenv/config"; // Вместо этого можно:
 // import dotenv from "dotenv";
 // dotenv.config();
@@ -82,7 +79,7 @@ const logout = async (req, res) => {
 
 const updateSubscription = async (req, res) => {
   const { email } = req.user;
-  const result = await updateSubscriptionByFilter({ email }, req.body);
+  const result = await updateByFilter({ email }, req.body);
   const { subscription } = result;
   if (!result) {
     throw HttpError(404);
@@ -95,20 +92,17 @@ const updateSubscription = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { email } = req.user;
-  console.log(req.file);
+
   const { path: oldPath, filename } = req.file;
-  // const file = filename.split(".").shift();
-  // console.log(file);
   const newPath = path.join(avatarsDir, filename);
+
   const file = await Jimp.read(oldPath);
   file.resize(250, 250);
+
   await fs.rename(oldPath, newPath);
   const avatarURL = path.join("avatars", filename);
 
-  const result = await updateSubscriptionByFilter(
-    { email },
-    { ...req.body, avatarURL }
-  );
+  const result = await updateByFilter({ email }, { ...req.body, avatarURL });
   if (!result) {
     throw HttpError(401, "Not authorized");
   }
