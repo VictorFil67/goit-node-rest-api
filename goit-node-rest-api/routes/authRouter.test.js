@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import request from "supertest";
+import "dotenv/config";
 
 import app from "../app.js";
 
@@ -25,8 +26,8 @@ describe("test /users/login", () => {
 
   test("test with correct data", async () => {
     const signinData = {
-      email: "qwerty555@db.com",
-      password: "12345555",
+      email: "qwerty5@db.com",
+      password: "12345",
     };
 
     const { statusCode, body } = await request(app)
@@ -34,9 +35,8 @@ describe("test /users/login", () => {
       .send(signinData);
     expect(statusCode).toBe(200);
     expect(body.token).not.toBeNull();
-    expect(body.user).toHaveLength(2);
-    // expect(typeof body.user.email).toBe("string");
-    expect(body.user.email).toBe(expect.any(String));
-    expect(body.user.subscription).toBe(expect.any(String));
+    expect(Object.keys(body.user)).toHaveLength(2);
+    expect(body.user.email).toEqual(expect.any(String));
+    expect(body.user.subscription).toEqual(expect.any(String));
   });
 });

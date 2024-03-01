@@ -28,8 +28,10 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 const { DB_HOST, PORT = 4000 } = process.env;
+// const { TEST_DB_HOST, PORT = 4000 } = process.env;
 mongoose
   .connect(DB_HOST)
+  // .connect(TEST_DB_HOST)
   .then(() => {
     console.log("Database connection successful");
     app.listen(PORT, () => {

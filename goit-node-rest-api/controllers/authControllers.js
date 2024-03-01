@@ -9,7 +9,7 @@ import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { findUser, updateByFilter } from "../services/userServices.js";
-import "dotenv/config"; // Вместо этого можно:
+import "dotenv/config"; // Для сохранения переменных окружения в объекте process.env. Вместо этого можно:
 // import dotenv from "dotenv";
 // dotenv.config();
 
