@@ -6,16 +6,18 @@ import Jimp from "jimp";
 import { register, setToken } from "../services/authServices.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
+import sendEmail from "../helpers/sendEmail.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { findUser, updateByFilter } from "../services/userServices.js";
+import { nanoid } from "nanoid";
 import "dotenv/config"; // Для сохранения переменных окружения в объекте process.env. Вместо этого можно:
 // import dotenv from "dotenv";
 // dotenv.config();
 
 const avatarsDir = path.resolve("public", "avatars");
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, BASE_URL } = process.env;
 
 const signup = async (req, res) => {
   const { email } = req.body;
@@ -25,9 +27,20 @@ const signup = async (req, res) => {
     throw HttpError(409, "Email in use");
   }
 
+  const verificationToken = nanoid();
+
   const avatarURL = gravatar.url(email);
 
-  const newUser = await register({ ...req.body, avatarURL });
+  const newUser = await register({ ...req.body, avatarURL, verificationToken });
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationToken}">CLick to verify email</a>`,
+  };
+
+  await sendEmail(verifyEmail);
+
   res.status(201).json({
     user: {
       email: newUser.email,
@@ -37,11 +50,57 @@ const signup = async (req, res) => {
   });
 };
 
+const verify = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await findUser({ verificationToken });
+  // console.log(user);
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+  await updateByFilter(
+    { _id: user._id },
+    { verify: true, verificationToken: null }
+  );
+
+  res.json({
+    message: "Verification successful",
+  });
+};
+
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw HttpError(400, "missing required field email");
+  }
+  const user = await findUser({ email });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${user.verificationToken}">CLick to verify email</a>`,
+  };
+
+  await sendEmail(verifyEmail);
+
+  res.json({
+    message: "Verification email sent",
+  });
+};
+
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await findUser({ email });
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
+  }
+  if (!user.verify) {
+    throw HttpError(401, "Email not verify");
   }
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
@@ -113,6 +172,8 @@ const updateAvatar = async (req, res) => {
 
 export default {
   signup: ctrlWrapper(signup),
+  verify: ctrlWrapper(verify),
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),

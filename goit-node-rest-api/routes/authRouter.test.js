@@ -4,8 +4,6 @@ import "dotenv/config";
 
 import app from "../app.js";
 
-// import User from "../models/User.js";
-
 const { TEST_DB_HOST, PORT = 4000 } = process.env;
 
 describe("test /users/login", () => {
@@ -19,10 +17,6 @@ describe("test /users/login", () => {
     await mongoose.connection.close();
     server.close();
   });
-
-  //   beforeEach(()=> {})
-
-  //   afterEach(async () => await User.deleteMany({}))
 
   test("test with correct data", async () => {
     const signinData = {
