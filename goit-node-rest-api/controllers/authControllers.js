@@ -138,6 +138,7 @@ const logout = async (req, res) => {
 
 const updateSubscription = async (req, res) => {
   const { email } = req.user;
+  console.log(req.body);
   const result = await updateByFilter({ email }, req.body);
   const { subscription } = result;
   if (!result) {
@@ -151,7 +152,7 @@ const updateSubscription = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { email } = req.user;
-
+  console.log(req.file);
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarsDir, filename);
 

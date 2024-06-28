@@ -27,7 +27,7 @@ app.use((err, req, res, next) => {
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
 });
-const { DB_HOST, PORT = 4000 } = process.env;
+const { DB_HOST, PORT = 3000 } = process.env;
 // const { TEST_DB_HOST, PORT = 4000 } = process.env;
 mongoose
   .connect(DB_HOST)
