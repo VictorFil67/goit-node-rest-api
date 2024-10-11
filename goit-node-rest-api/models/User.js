@@ -37,7 +37,7 @@ const userSchema = new Schema(
 );
 
 userSchema.post("save", handleSaveError);
-userSchema.pre("findOneAndUpdate", setUpdateSetting);
+userSchema.pre("findOneAndUpdate", setUpdateSetting); //Урок Модуль 3. REST API. MongoDB и Mongoose 50-55мин
 userSchema.post("findOneAndUpdate", handleSaveError);
 
 const User = model("user", userSchema);
