@@ -13,3 +13,4 @@ export async function register(data) {
 export function setToken(id, token = "") {
   return User.findByIdAndUpdate(id, { token });
 }
+c;
